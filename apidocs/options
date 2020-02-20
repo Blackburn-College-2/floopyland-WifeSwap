@@ -1,0 +1,24 @@
+-classpath
+'C:/Users/pauli/.m2/repository/org/java-websocket/Java-WebSocket/1.4.0/Java-WebSocket-1.4.0.jar;C:/Users/pauli/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;C:/Users/pauli/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'C:/Users/pauli/Documents/NetBeansProjects/FloopyConnector/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2020. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/pauli/Documents/NetBeansProjects/FloopyConnector/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'FloopyConnector 1.0-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/en/java/javase/11/docs/api' 'C:/Users/pauli/Documents/NetBeansProjects/FloopyConnector/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'FloopyConnector 1.0-SNAPSHOT API'

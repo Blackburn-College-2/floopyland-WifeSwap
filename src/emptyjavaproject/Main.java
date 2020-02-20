@@ -5,6 +5,9 @@
  */
 package emptyjavaproject;
 
+import com.pauliankline.floopyconnector.Floopy;
+import com.pauliankline.floopyconnector.GameBoard;
+
 /**
  *
  * @author paul.kline
@@ -16,6 +19,10 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Floopy floop = new Floopy(new ConcreteController());
+//replace ConcreteController with your controller.
+        floop.begin(5); //5 being the number of heroes.
+
     }
     
 }
