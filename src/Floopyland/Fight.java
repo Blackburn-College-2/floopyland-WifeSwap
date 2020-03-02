@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package emptyjavaproject;
+package Floopyland;
 
 /**
  *
@@ -15,8 +15,8 @@ public class Fight {
     public Fight(MyHero a, MyHero b){
         fighter1 = a;
         fighter2 = b;
-        fighter1.fighting=true;
-        fighter2.fighting=true;
+        a.fighting=true;
+        b.fighting=true;
     }
     public MyHero getOpponent(MyHero a){
         if(a == fighter1){

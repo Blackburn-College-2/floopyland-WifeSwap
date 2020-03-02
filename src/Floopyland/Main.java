@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package emptyjavaproject;
+package Floopyland;
 
 import com.pauliankline.floopyconnector.Floopy;
-import com.pauliankline.floopyconnector.GameBoard;
 
 /**
  *
