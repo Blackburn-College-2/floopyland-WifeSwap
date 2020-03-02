@@ -23,16 +23,16 @@ public class ConcreteController extends GameController{
     }
 
     @Override
-    public ArrayList<BaseHero> createHeroes(GameBoard arg0, int arg1) {
+    public ArrayList<BaseHero> createHeroes(GameBoard board, int numHeros) {
         ArrayList<BaseHero> toReturn = new ArrayList();
-        for(int i = 0; i < arg1; i++){
+        for(int i = 0; i < numHeros; i++){
             toReturn.add(mkHero());
     }
         return toReturn;
     }
     
     private BaseHero mkHero(){
-        return new MyHero(board,new Point(1,1));
+        return new MyHero(board,new Point((int)(Math.random()*(board.getWidth()-1)),(int)(Math.random()*(board.getHeight()-1))));
     }
     
 
