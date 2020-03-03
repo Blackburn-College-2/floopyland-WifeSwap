@@ -8,6 +8,7 @@ package Floopyland;
 import com.pauliankline.floopyconnector.BaseHero;
 import com.pauliankline.floopyconnector.GameBoard;
 import java.awt.Point;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,13 +17,13 @@ import java.awt.Point;
 public class MyHero extends BaseHero {
 
     boolean fighting = false;
-	Fight fight;
+    Fight fight;
 
     public MyHero(GameBoard board, Point point) {
         super(board, point);
         location = new Point(point.x, point.y);
         color = "green";
-        hp = 50;
+        hp = 500;
     }
 
     @Override
@@ -32,42 +33,49 @@ public class MyHero extends BaseHero {
 
     @Override
     public String enemy() {
-        return "test";
+        if(fighting){
+        return fight.getOpponent(this).name;
+        }else{
+            return "";
+        }
     }
 
     @Override
     public void gameTickAction(long arg0) {
-		if(isDead){
-			
-		}else{
-			if (fighting) {
-			this.attack(fight.getOpponent());				
-        } else {
-            gameboard.getGameSquare(location).removeHero(this);
-            Move();
-            gameboard.getGameSquare(location).addHero(this);
+        if (!isDead()) {
+            if (fighting) {
+                //System.out.println(name+" fighting");
+                if (!fight.getOpponent(this).isDead()) {
+                    this.attack(fight.getOpponent(this));
+                }
+            } else {
+                gameboard.getGameSquare(location).removeHero(this);
+                Move();
+                gameboard.getGameSquare(location).addHero(this);
+            }
         }
-		}
     }
 
     public Point getLocation() {
         return location;
     }
-	
-	private void attack(MyHero defender){
-		defender.recieveDamage(this.dealDamage);
-	}
-	private abstract int dealDamage(){
-		return 10;
-	}
-	
-	public void recieveDamage(int damage){
-		this.hp=this.hp-damage;
-		if(hp<=0){
-			die()
-		}
-	}
-		
+
+    private void attack(MyHero defender) {
+        defender.recieveDamage(this.dealDamage());
+    }
+
+    int dealDamage() {
+        return 50;
+    }
+
+    ; 
+            
+    public void recieveDamage(int damage) {
+        this.hp = this.hp - damage;
+        if (true) {
+            die();
+        }
+    }
 
     private void Move() {
         //if you are on the far right edge
@@ -116,9 +124,15 @@ public class MyHero extends BaseHero {
         Point scanningPoint = new Point(location.x - leftOffset, location.y - topOffset);
         while (scanning == true) {
             if (gameboard.getGameSquare(scanningPoint).heroesArePresent()) {
-                ArrayList<<MyHero>> heroesToCheck = gameboard.getGameSquare(scanningPoint).getHeroesPresent();
+                ArrayList<MyHero> heroesToCheck = new ArrayList();
+                for (int i = 0; i < gameboard.getGameSquare(scanningPoint).getHeroesPresent().size(); i++) {
+                    if (gameboard.getGameSquare(scanningPoint).getHeroesPresent().get(i) == null) {
+                    } else {
+                        heroesToCheck.add((MyHero) gameboard.getGameSquare(scanningPoint).getHeroesPresent().get(i));
+                    }
+                }
                 //Checks 1 square in every direction around the hero (3x3 grid)
-                for (int i = 0; i < heroesToCheck.size; i++) {
+                for (int i = 0; i < heroesToCheck.size(); i++) {
                     if (!heroesToCheck.get(i).equals(this)) {
                         //if a hero within that 1x1 grid isn't in battle
                         if (null == heroesToCheck.get(i) || heroesToCheck.get(i).isInBattle()) {
@@ -127,14 +141,13 @@ public class MyHero extends BaseHero {
                             //if their x and y are within 1 tile of this hero, fight them
                             if (Math.abs(heroesToCheck.get(i).location.x - this.location.x) <= 1 && Math.abs(heroesToCheck.get(i).location.y - this.location.y) <= 1);
                             this.fight = new Fight(this, heroesToCheck.get(i));
-                            System.out.println("Fighting");
                             scanning = false;
+                            break;
                             //if they are too far away to fight (2 away in x or y)    
                         }
-						
-						//Code below commented out but can be used if the heros can see futher away
-						//below code tells heroes to move towards people they could fight
-						
+
+                        //Code below commented out but can be used if the heros can see futher away
+                        //below code tells heroes to move towards people they could fight
 //                    else {
 //                        //if they are further away in the x than in the y
 //                        if (Math.abs(heroesToCheck.get(i).location.x - this.location.x) >= Math.abs(heroesToCheck.get(i).location.y - this.location.y)) {
@@ -153,53 +166,46 @@ public class MyHero extends BaseHero {
                     }
 
                 }
-            }            
-                //if the scanner hasn't reached the end of the line going from x-leftOffset to x+rightOffset centered around the hero
-                if (scanningPoint.x < location.x + rightOffset) {
-                    //move the scanner right
-                    scanningPoint.x++;
+            }
+            //if the scanner hasn't reached the end of the line going from x-leftOffset to x+rightOffset centered around the hero
+            if (scanningPoint.x < location.x + rightOffset) {
+                //move the scanner right
+                scanningPoint.x++;
 
-                    //if the scanner has reached the end of the line going from y-1 to y+1 centered around the hero
-                } else if (scanningPoint.y < location.y + bottomOffset) {
-                    //move from all the way to the left
-                    scanningPoint.x = location.x - leftOffset;
-                    //move down a row
-                    scanningPoint.y++;
+                //if the scanner has reached the end of the line going from y-1 to y+1 centered around the hero
+            } else if (scanningPoint.y < location.y + bottomOffset) {
+                //move from all the way to the left
+                scanningPoint.x = location.x - leftOffset;
+                //move down a row
+                scanningPoint.y++;
 
-                    //if the whole area has been scanned and no heroes are avalable to move towards    
-                } else {
-                    moveTowardsCenter();
-                    scanning = false;
-                }
+                //if the whole area has been scanned and no heroes are avalable to move towards    
+            } else {
+                moveRandomly(leftOffset,rightOffset,topOffset,bottomOffset);
+                scanning = false;
+            }
         }
     }
 
     //moves the hero towards the center of the map
-    private void moveTowardsCenter() {
-        Point center = new Point(gameboard.getHeight() / 2, gameboard.getWidth() / 2);
-        //if the hero is further away from center in the x axis than the y axis
-        if (Math.abs(location.x - center.x) > Math.abs(location.y - center.y)) {
-            //if the hero is right of center
-            if (location.x - center.x > 0) {
-                moveLeft();
-            } else {
-                moveRight();
-            }
-            //if the hero is further away  from the center in the y axis than the x axis or is tied in both directions
-        } else {
-            if (location.y - center.y > 0) {
-                moveUp();
-            } else {
-                moveDown();
-            }
-
+    private void moveRandomly(int leftOffset, int rightOffset, int topOffset, int bottomOffset) {
+        int direction = (int)(Math.random()*4);
+        if(direction==0){
+            location.x = location.x - leftOffset;
+        }else if(direction==1){            
+            location.x = location.x + rightOffset;
+        }else if(direction==2){            
+            location.y = location.y - topOffset;
+        }else if(direction==3){            
+            location.y = location.y + bottomOffset;            
         }
     }
 
     @Override
     protected void die() {
-		this.hp=0
-		gameboard.getGameSquare(location).removeHero(this);
+        this.hp = 0;
+        gameboard.getGameSquare(location).removeHero(this);
+        fight.end();
     }
 
     @Override

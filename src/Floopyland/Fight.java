@@ -10,22 +10,29 @@ package Floopyland;
  * @author Gabl
  */
 public class Fight {
+
     private MyHero fighter1;
     private MyHero fighter2;
-    public Fight(MyHero a, MyHero b){
+
+    public Fight(MyHero a, MyHero b) {
         fighter1 = a;
         fighter2 = b;
-        a.fighting=true;
-        b.fighting=true;
+        a.fighting = true;
+        b.fighting = true;
+        a.fight=this;
+        b.fight=this;
     }
-    public MyHero getOpponent(MyHero a){
-        if(a == fighter1){
+
+    public MyHero getOpponent(MyHero a) {
+        if (fighter1.equals(a)) {
             return fighter2;
-        }else{
+        } else {
             return fighter1;
         }
     }
-	public void end(){
-		a.fighting=false;
-		b.fighting=false;
+
+    public void end() {
+        fighter1.fighting = false;
+        fighter2.fighting = false;
+    }
 }

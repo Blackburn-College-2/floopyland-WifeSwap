@@ -22,18 +22,19 @@ public class ConcreteController extends GameController{
         ArrayList<BaseHero> toReturn = new ArrayList();
         for(int i = 0; i < numHeros; i++){
             toReturn.add(mkHero(board));
+            toReturn.get(i).name=("hero"+i);
     }
         return toReturn;
     }
     
     private BaseHero mkHero(GameBoard board){
-        return new MyHero(board,new Point(0,0));
+        return new MyHero(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight())));
     }
     
 
     @Override
     public GameBoard mkGameBoard() {
-        return new GameBoard(25,25);
+        return new GameBoard();
     }
     
 }
