@@ -16,6 +16,7 @@ import java.awt.Point;
 public class MyHero extends BaseHero {
 
     boolean fighting = false;
+	Fight fight;
 
     public MyHero(GameBoard board, Point point) {
         super(board, point);
@@ -36,18 +37,37 @@ public class MyHero extends BaseHero {
 
     @Override
     public void gameTickAction(long arg0) {
-        if (fighting) {
-
+		if(isDead){
+			
+		}else{
+			if (fighting) {
+			this.attack(fight.getOpponent());				
         } else {
             gameboard.getGameSquare(location).removeHero(this);
             Move();
             gameboard.getGameSquare(location).addHero(this);
         }
+		}
     }
 
     public Point getLocation() {
         return location;
     }
+	
+	private void attack(MyHero defender){
+		defender.recieveDamage(this.dealDamage);
+	}
+	private abstract int dealDamage(){
+		return 10;
+	}
+	
+	public void recieveDamage(int damage){
+		this.hp=this.hp-damage;
+		if(hp<=0){
+			die()
+		}
+	}
+		
 
     private void Move() {
         //if you are on the far right edge
@@ -96,27 +116,31 @@ public class MyHero extends BaseHero {
         Point scanningPoint = new Point(location.x - leftOffset, location.y - topOffset);
         while (scanning == true) {
             if (gameboard.getGameSquare(scanningPoint).heroesArePresent()) {
-                MyHero[] heroesToCheck = new MyHero[gameboard.getGameSquare(scanningPoint).getHeroesPresent().size()];
+                ArrayList<<MyHero>> heroesToCheck = gameboard.getGameSquare(scanningPoint).getHeroesPresent();
                 //Checks 1 square in every direction around the hero (3x3 grid)
-                for (int i = 0; i < heroesToCheck.length; i++) {
-                    if (!heroesToCheck[i].equals(this)) {
+                for (int i = 0; i < heroesToCheck.size; i++) {
+                    if (!heroesToCheck.get(i).equals(this)) {
                         //if a hero within that 1x1 grid isn't in battle
-                        if (null == heroesToCheck[i] || heroesToCheck[i].isInBattle()) {
+                        if (null == heroesToCheck.get(i) || heroesToCheck.get(i).isInBattle()) {
                         } else {
 
                             //if their x and y are within 1 tile of this hero, fight them
-                            if (Math.abs(heroesToCheck[i].location.x - this.location.x) <= 1 && Math.abs(heroesToCheck[i].location.y - this.location.y) <= 1);
-                            Fight fight = new Fight(this, heroesToCheck[i]);
+                            if (Math.abs(heroesToCheck.get(i).location.x - this.location.x) <= 1 && Math.abs(heroesToCheck.get(i).location.y - this.location.y) <= 1);
+                            this.fight = new Fight(this, heroesToCheck.get(i));
                             System.out.println("Fighting");
                             scanning = false;
                             //if they are too far away to fight (2 away in x or y)    
                         }
+						
+						//Code below commented out but can be used if the heros can see futher away
+						//below code tells heroes to move towards people they could fight
+						
 //                    else {
 //                        //if they are further away in the x than in the y
-//                        if (Math.abs(heroesToCheck[i].location.x - this.location.x) >= Math.abs(heroesToCheck[i].location.y - this.location.y)) {
+//                        if (Math.abs(heroesToCheck.get(i).location.x - this.location.x) >= Math.abs(heroesToCheck.get(i).location.y - this.location.y)) {
 //
 //                            //if the hero not fighting is further to the right
-//                            if (heroesToCheck[i].location.x - this.location.x > 0) {
+//                            if (heroesToCheck.get(i).location.x - this.location.x > 0) {
 //                                //move a tile to the right
 //                                location.x++;
 //                            } //if the hero not fighting is further to the left
@@ -174,6 +198,8 @@ public class MyHero extends BaseHero {
 
     @Override
     protected void die() {
+		this.hp=0
+		gameboard.getGameSquare(location).removeHero(this);
     }
 
     @Override

@@ -25,4 +25,7 @@ public class Fight {
             return fighter1;
         }
     }
+	public void end(){
+		a.fighting=false;
+		b.fighting=false;
 }
