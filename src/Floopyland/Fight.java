@@ -31,7 +31,8 @@ public class Fight {
         }
     }
 
-    public void end() {
+    public void end(MyHero winner) {
+        winner.addKill();
         fighter1.fighting = false;
         fighter2.fighting = false;
     }

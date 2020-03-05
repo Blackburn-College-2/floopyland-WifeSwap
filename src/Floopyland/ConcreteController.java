@@ -22,19 +22,25 @@ public class ConcreteController extends GameController{
         ArrayList<BaseHero> toReturn = new ArrayList();
         for(int i = 0; i < numHeros; i++){
             toReturn.add(mkHero(board));
-            toReturn.get(i).name=("hero"+i);
+            toReturn.get(i).name=(toReturn.get(i).name+i);
     }
         return toReturn;
     }
     
     private BaseHero mkHero(GameBoard board){
-        return new MyHero(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight())));
+        MyHero[] Heroes = new MyHero[]{new Healer(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight()))), 
+                new Tanker(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight()))), 
+                new Ninja(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight()))),
+                new Soldier(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight()))),
+               new GlassCannon(board,new Point((int)(Math.random()*board.getWidth()),(int)(Math.random()*board.getHeight())))};
+        
+        return Heroes[(int)(Math.random()*5)];
     }
     
 
     @Override
     public GameBoard mkGameBoard() {
-        return new GameBoard();
+        return new GameBoard(16,16);
     }
     
 }

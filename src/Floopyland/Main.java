@@ -18,7 +18,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Floopy floop = new Floopy(new ConcreteController());
-        floop.begin(99);
+        floop.begin(10);
 
     }
     

@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author jonathan.gabl
  */
-public class MyHero extends BaseHero {
+abstract class MyHero extends BaseHero {
 
     boolean fighting = false;
     Fight fight;
@@ -22,8 +22,6 @@ public class MyHero extends BaseHero {
     public MyHero(GameBoard board, Point point) {
         super(board, point);
         location = new Point(point.x, point.y);
-        color = "green";
-        hp = 500;
     }
 
     @Override
@@ -50,7 +48,7 @@ public class MyHero extends BaseHero {
                 }
             } else {
                 gameboard.getGameSquare(location).removeHero(this);
-                Move();
+                this.Move();
                 gameboard.getGameSquare(location).addHero(this);
             }
         }
@@ -60,24 +58,24 @@ public class MyHero extends BaseHero {
         return location;
     }
 
-    private void attack(MyHero defender) {
+    public void attack(MyHero defender) {
         defender.recieveDamage(this.dealDamage());
     }
 
-    int dealDamage() {
-        return 50;
-    }
-
-    ; 
+    int dealDamage(){
+        return (int)(Math.random()*45);
+    };
             
-    public void recieveDamage(int damage) {
+    public int recieveDamage(int damage) {
         this.hp = this.hp - damage;
-        if (true) {
+        int damageTaken = damage;
+        if (hp <=0) {
             die();
         }
+        return damageTaken;
     }
 
-    private void Move() {
+    public void Move() {
         //if you are on the far right edge
         if (gameboard.getWidth() - location.x == 1) {
             //if you are on the bottom
@@ -118,7 +116,7 @@ public class MyHero extends BaseHero {
         }
     }
 
-    private void lookAround(int leftOffset, int rightOffset, int topOffset, int bottomOffset) {
+    public void lookAround(int leftOffset, int rightOffset, int topOffset, int bottomOffset) {
         boolean scanning = true;
 
         Point scanningPoint = new Point(location.x - leftOffset, location.y - topOffset);
@@ -139,7 +137,7 @@ public class MyHero extends BaseHero {
                         } else {
 
                             //if their x and y are within 1 tile of this hero, fight them
-                            if (Math.abs(heroesToCheck.get(i).location.x - this.location.x) <= 1 && Math.abs(heroesToCheck.get(i).location.y - this.location.y) <= 1);
+                            if (Math.abs(heroesToCheck.get(i).getLocation().getX() - this.location.x) <= 1 && Math.abs(heroesToCheck.get(i).getLocation().getY() - this.location.y) <= 1);
                             this.fight = new Fight(this, heroesToCheck.get(i));
                             scanning = false;
                             break;
@@ -205,7 +203,7 @@ public class MyHero extends BaseHero {
     protected void die() {
         this.hp = 0;
         gameboard.getGameSquare(location).removeHero(this);
-        fight.end();
+        fight.end(fight.getOpponent(this));
     }
 
     @Override
@@ -216,6 +214,10 @@ public class MyHero extends BaseHero {
             return false;
         }
 
+    }
+    
+    public void addKill(){
+        kills++;
     }
 
     private void moveLeft() {
