@@ -7,6 +7,7 @@ package Floopyland;
 
 import com.pauliankline.floopyconnector.BaseHero;
 import com.pauliankline.floopyconnector.GameBoard;
+import com.pauliankline.floopyconnector.Item;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -18,6 +19,8 @@ abstract class MyHero extends BaseHero {
 
     boolean fighting = false;
     Fight fight;
+    double strengthModifier = 1.0;
+    int strengthTicks = 0;
 
     public MyHero(GameBoard board, Point point) {
         super(board, point);
@@ -31,25 +34,115 @@ abstract class MyHero extends BaseHero {
 
     @Override
     public String enemy() {
-        if(fighting){
-        return fight.getOpponent(this).name;
-        }else{
+        if (fighting) {
+            return fight.getOpponent(this).name;
+        } else {
             return "";
         }
     }
 
     @Override
     public void gameTickAction(long arg0) {
-        if (!isDead()) {
-            if (fighting) {
-                //System.out.println(name+" fighting");
-                if (!fight.getOpponent(this).isDead()) {
-                    this.attack(fight.getOpponent(this));
+        boolean hasAction = true;
+        //if a strength potion is currently in effect
+        if (strengthTicks > 0) {
+            strengthTicks--;
+            if (strengthTicks == 0) {
+                strengthModifier = 1.0;
+            }
+        }
+        //if the gameboard has items and your inventory has room
+        if (gameboard.getGameSquare(location).hasItems() && this.inventorySize > this.inventory.size()) {
+            ArrayList<Item> itemsToAdd = new ArrayList();
+            for (int i = 0; i < gameboard.getGameSquare(location).getItems().size(); i++){
+            itemsToAdd.add(gameboard.getGameSquare(location).getItems().get(i));
+        }
+
+            //add as many items as possible
+            for (int i = 0; i <= (this.inventorySize - inventory.size()); i++) {
+                this.inventory.add(itemsToAdd.get(0));
+                gameboard.getGameSquare(location).getItems().remove(itemsToAdd.get(0));
+            }
+        }
+        //check for avaliable items
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).type.equals("HealthPotion") && maxHp - hp >= 50) {
+                hp = hp + 50;
+                ((HealthPotion) inventory.get(i)).consume();
+                hasAction = false;
+                break;
+            } else if (inventory.get(i).type.equals("StrengthPotion") && strengthModifier == 1.0) {
+                strengthModifier = 1.10;
+                strengthTicks = 20;
+                ((StrengthPotion) inventory.get(i)).consume();
+                hasAction = false;
+                break;
+            }
+
+        }
+        if (hasAction) {
+            if (!isDead()) {
+                if (fighting) {
+                    //System.out.println(name+" fighting");
+                    if (!fight.getOpponent(this).isDead()) {
+                        this.attack(fight.getOpponent(this));
+                    }
+                } else {
+                    gameboard.getGameSquare(location).removeHero(this);
+                    this.Move();
+                    gameboard.getGameSquare(location).addHero(this);
                 }
-            } else {
-                gameboard.getGameSquare(location).removeHero(this);
-                this.Move();
-                gameboard.getGameSquare(location).addHero(this);
+            }
+        }
+        //check for quick relic
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).type.equals("QuickRelic")) {
+                gameTickActionAvoidingRecursion(arg0);
+            }
+        }
+    }
+    //a second action for use with the quick relic. doesn't have the quickrelic check at the end to prevent recursion
+
+    private void gameTickActionAvoidingRecursion(long arg0) {
+        boolean hasAction = true;
+        //if the gameboard has items and your inventory has room
+        if (gameboard.getGameSquare(location).hasItems() && this.inventorySize > this.inventory.size()) {
+            ArrayList<Item> itemsToAdd = gameboard.getGameSquare(location).getItems();
+
+            //add as many items as possible
+            for (int i = 0; i < (this.inventorySize - inventory.size()); i++) {
+                this.inventory.add(itemsToAdd.get(i));
+                gameboard.getGameSquare(location).getItems().remove(i);
+            }
+        }
+        //check for avaliable items
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).type.equals("HealthPotion") && maxHp - hp >= 50) {
+                hp = hp + 50;
+                ((HealthPotion) inventory.get(i)).consume();
+                hasAction = false;
+                break;
+            } else if (inventory.get(i).type.equals("StrengthPotion") && strengthModifier == 1.0) {
+                strengthModifier = 1.10;
+                strengthTicks = 20;
+                ((StrengthPotion) inventory.get(i)).consume();
+                hasAction = false;
+                break;
+            }
+
+        }
+        if (hasAction) {
+            if (!isDead()) {
+                if (fighting) {
+                    //System.out.println(name+" fighting");
+                    if (!fight.getOpponent(this).isDead()) {
+                        this.attack(fight.getOpponent(this));
+                    }
+                } else {
+                    gameboard.getGameSquare(location).removeHero(this);
+                    this.Move();
+                    gameboard.getGameSquare(location).addHero(this);
+                }
             }
         }
     }
@@ -59,17 +152,32 @@ abstract class MyHero extends BaseHero {
     }
 
     public void attack(MyHero defender) {
-        defender.recieveDamage(this.dealDamage());
+        if (defender.hasTome()) {
+            this.recieveDamage((int)((defender.recieveDamage((int)((strengthModifier * this.dealDamage())*.90))/.9)*.01));
+        } else {
+            defender.recieveDamage((int) strengthModifier * this.dealDamage());
+        }
     }
 
-    int dealDamage(){
-        return (int)(Math.random()*45);
-    };
+    public boolean hasTome() {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).type.equals("TomeOfMisdirection")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int dealDamage() {
+        return (int) (Math.random() * 45);
+    }
+
+    ;
             
     public int recieveDamage(int damage) {
         this.hp = this.hp - damage;
         int damageTaken = damage;
-        if (hp <=0) {
+        if (hp <= 0) {
             die();
         }
         return damageTaken;
@@ -179,7 +287,7 @@ abstract class MyHero extends BaseHero {
 
                 //if the whole area has been scanned and no heroes are avalable to move towards    
             } else {
-                moveRandomly(leftOffset,rightOffset,topOffset,bottomOffset);
+                moveRandomly(leftOffset, rightOffset, topOffset, bottomOffset);
                 scanning = false;
             }
         }
@@ -187,15 +295,31 @@ abstract class MyHero extends BaseHero {
 
     //moves the hero towards the center of the map
     private void moveRandomly(int leftOffset, int rightOffset, int topOffset, int bottomOffset) {
-        int direction = (int)(Math.random()*4);
-        if(direction==0){
-            location.x = location.x - leftOffset;
-        }else if(direction==1){            
-            location.x = location.x + rightOffset;
-        }else if(direction==2){            
-            location.y = location.y - topOffset;
-        }else if(direction==3){            
-            location.y = location.y + bottomOffset;            
+        int direction = (int) (Math.random() * 4);
+        if (direction == 0) {
+            if (leftOffset == 1) {
+                location.x = location.x - leftOffset;
+            } else {
+                moveRandomly(leftOffset, rightOffset, topOffset, bottomOffset);
+            }
+        } else if (direction == 1) {
+            if (rightOffset == 1) {
+                location.x = location.x + rightOffset;
+            } else {
+                moveRandomly(leftOffset, rightOffset, topOffset, bottomOffset);
+            }
+        } else if (direction == 2) {
+            if (topOffset == 1) {
+                location.y = location.y - topOffset;
+            } else {
+                moveRandomly(leftOffset, rightOffset, topOffset, bottomOffset);
+            }
+        } else if (direction == 3) {
+            if (leftOffset == 1) {
+                location.y = location.y + bottomOffset;
+            } else {
+                moveRandomly(leftOffset, rightOffset, topOffset, bottomOffset);
+            }
         }
     }
 
@@ -215,8 +339,8 @@ abstract class MyHero extends BaseHero {
         }
 
     }
-    
-    public void addKill(){
+
+    public void addKill() {
         kills++;
     }
 
@@ -235,4 +359,5 @@ abstract class MyHero extends BaseHero {
     private void moveDown() {
         location.y++;
     }
+
 }

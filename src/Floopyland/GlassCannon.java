@@ -13,21 +13,24 @@ import java.awt.Point;
  * @author Gabl
  */
 public class GlassCannon extends MyHero{
+static int population;
 
     public GlassCannon(GameBoard board, Point point) {
         super(board, point);
+        inventorySize = 3;
         hp = 2;
         maxHp = 2;
         color = "PALETURQUOISE";
-        super.name = "GlassCannon";
+        population++;
+        super.name = "GlassCannon"+ population;
     }    
     @Override
     public void attack(MyHero defender) {
-        defender.recieveDamage(this.dealDamage());
+        defender.recieveDamage((int)strengthModifier*this.dealDamage());
         hp = maxHp;
     }
     @Override 
     public int dealDamage(){
-        return 10000;
+        return 2000;
     }
 }

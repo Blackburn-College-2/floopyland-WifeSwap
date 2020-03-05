@@ -13,12 +13,15 @@ import java.awt.Point;
  * @author Gabl
  */
 public class Ninja extends MyHero {
+static int population;
 
     public Ninja(GameBoard board, Point point) {
         super(board, point);
+        inventorySize = 3;
         hp = 1000;
         color = "DARKMAGENTA";
-        super.name = "Ninja";
+        population++;
+        super.name = "Ninja"+ population;
     }
 
     @Override

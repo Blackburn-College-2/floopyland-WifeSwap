@@ -12,23 +12,37 @@ import java.awt.Point;
  *
  * @author Gabl
  */
-public class Healer extends MyHero{
+public class Healer extends MyHero {
+
+    static int population;
 
     public Healer(GameBoard board, Point point) {
         super(board, point);
+        inventorySize = 3;
         hp = 1000;
         maxHp = 1000;
         color = "LEMONCHIFFON";
-        super.name = "Healer";
+        population++;
+        super.name = "Healer" + population;
     }
+
     @Override
     public void attack(MyHero defender) {
-        int damageToHeal = defender.recieveDamage(this.dealDamage())/4;
-        if(damageToHeal + hp <= maxHp){
-            hp = hp + damageToHeal;
-        }else{
-            hp = maxHp;
+        if (defender.hasTome()) {
+            int damageToHeal = defender.recieveDamage((int)(this.dealDamage()*.9/4));
+            if (damageToHeal + hp <= maxHp) {
+                hp = hp + damageToHeal;
+            } else {
+                hp = maxHp;
+            }            
+        } else {
+            int damageToHeal = defender.recieveDamage(this.dealDamage()) / 4;
+            if (damageToHeal + hp <= maxHp) {
+                hp = hp + damageToHeal;
+            } else {
+                hp = maxHp;
+            }
         }
     }
-    
+
 }

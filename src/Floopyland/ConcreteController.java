@@ -8,6 +8,7 @@ package Floopyland;
 import com.pauliankline.floopyconnector.BaseHero;
 import com.pauliankline.floopyconnector.GameBoard;
 import com.pauliankline.floopyconnector.GameController;
+import com.pauliankline.floopyconnector.Item;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -22,7 +23,6 @@ public class ConcreteController extends GameController{
         ArrayList<BaseHero> toReturn = new ArrayList();
         for(int i = 0; i < numHeros; i++){
             toReturn.add(mkHero(board));
-            toReturn.get(i).name=(toReturn.get(i).name+i);
     }
         return toReturn;
     }
@@ -40,7 +40,20 @@ public class ConcreteController extends GameController{
 
     @Override
     public GameBoard mkGameBoard() {
-        return new GameBoard(16,16);
+        GameBoard board = new GameBoard(7,7);
+        for(int i = 0; i < board.getHeight(); i++){
+        for(int j = 0; j < board.getWidth(); j++){
+            if (Math.random()<.12){
+                board.getGameSquare(new Point(j,i)).addItem(mkItem());
+            }
+        }
+    }
+        return board;
+    }
+    private Item mkItem(){
+        Item[] Items = new Item[]{new HealthPotion(), new StrengthPotion(), new TomeOfMisdirection(), new QuickRelic()};
+        return Items[(int)(Math.random()*4)];
+    
     }
     
 }

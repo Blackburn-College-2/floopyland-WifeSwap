@@ -13,13 +13,16 @@ import java.awt.Point;
  * @author Gabl
  */
 public class Tanker extends MyHero{
+static int population;
 
     public Tanker(GameBoard board, Point point) {
         super(board, point);
+        inventorySize = 3;
         hp = 2000;
         maxHp=2000;
         color = "DARKOLIVEGREEN";
-        super.name = "Tanker";
+        population++;
+        super.name = "Tanker"+ population;
     }
     
 }

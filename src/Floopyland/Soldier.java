@@ -13,12 +13,15 @@ import java.awt.Point;
  * @author Gabl
  */
 public class Soldier extends MyHero{
+static int population;
 
     public Soldier(GameBoard board, Point point) {
         super(board, point);
+        inventorySize = 4;
         hp = 500;
         color = "red";
-        super.name = "Soldier";
+        population++;
+        super.name = "Soldier"+ population;
     }
     
 }
